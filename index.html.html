@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Dashboard แผนดำเนินงานกิจกรรมคณะกรรมการนักศึกษาคณะบริหารธุรกิจ 2569</title>
+    <!-- Google Fonts: Prompt & Sarabun -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            DEFAULT: '#0f2c59',
+                            dark: '#0a1e3f',
+                            light: '#193f77'
+                        },
+                        mint: {
+                            DEFAULT: '#00a8cc',
+                            light: '#e6f7fa',
+                            dark: '#0086a3'
+                        },
+                        neutralBg: '#f8f9fa'
+                    },
+                    fontFamily: {
+                        prompt: ['Prompt', 'sans-serif'],
+                        sarabun: ['Sarabun', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #f8f9fa;
+        }
+        h1, h2, h3, h4, h5, h6, .font-heading {
+            font-family: 'Prompt', sans-serif;
+        }
+        /* Custom scrollbar for table */
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Header Section -->
+    <header class="bg-navy text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-mint p-2.5 rounded-xl text-navy text-2xl font-bold flex items-center justify-center w-12 h-12">
+                        <i class="fa-solid font-heading">SPU</i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg sm:text-xl md:text-2xl font-bold leading-tight">แดชบอร์ดติดตามผลการดำเนินงานโครงการ</h1>
+                        <p class="text-xs sm:text-sm text-slate-300">คณะกรรมการนักศึกษาคณะบริหารธุรกิจ ประจำปีการศึกษา 2569</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2 text-xs bg-navy-light px-3 py-1.5 rounded-lg text-slate-200 self-start md:self-auto border border-slate-600/40">
+                    <i class="fa-regular fa-clock text-mint"></i>
+                    <span>อัปเดตข้อมูลล่าสุด: ปีการศึกษา 2569</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
+        
+        <!-- Filters Section -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-4 sm:p-5 mb-6">
+            <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
+                <h2 class="text-base font-semibold text-navy flex items-center gap-2">
+                    <i class="fa-solid fa-filter text-mint"></i> ตัวกรองข้อมูล (Interactive Filters)
+                </h2>
+                <button id="resetFilters" class="text-xs text-mint hover:text-navy font-medium transition flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-rotate-left"></i> ล้างตัวกรองทั้งหมด
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Semester Filter -->
+                <div>
+                    <label for="filterSemester" class="block text-xs font-semibold text-slate-600 mb-1">ภาคการศึกษา</label>
+                    <select id="filterSemester" class="w-full bg-slate-50 border border-slate-300 text-slate-700 text-sm rounded-xl focus:ring-mint focus:border-mint p-2.5 outline-none transition">
+                        <option value="ALL">ทั้งหมด (All Semesters)</option>
+                        <option value="ภาค 1-1/69">ภาค 1-1/69</option>
+                        <option value="ภาค 1">ภาค 1</option>
+                        <option value="ภาค 2">ภาค 2</option>
+                        <option value="ภาค 3">ภาค 3</option>
+                        <option value="ตลอดปีการศึกษา">ตลอดปีการศึกษา</option>
+                        <option value="เลื่อน จาก 1/69">เลื่อน จาก 1/69</option>
+                    </select>
+                </div>
+
+                <!-- Budget Type Filter -->
+                <div>
+                    <label for="filterBudgetType" class="block text-xs font-semibold text-slate-600 mb-1">ประเภทงบประมาณ / ประเภทโครงการ</label>
+                    <select id="filterBudgetType" class="w-full bg-slate-50 border border-slate-300 text-slate-700 text-sm rounded-xl focus:ring-mint focus:border-mint p-2.5 outline-none transition">
+                        <option value="ALL">ทั้งหมด (All Types)</option>
+                        <option value="จากส่วนกลาง">จากส่วนกลาง</option>
+                        <option value="ไม่มีงบประมาณ">ไม่มีงบประมาณ</option>
+                        <option value="โครงการ (ทุกประเภท)">โครงการ (ทุกประเภท)</option>
+                        <option value="งบประมาณการตลาด">งบประมาณการตลาด</option>
+                    </select>
+                </div>
+
+                <!-- Status Filter -->
+                <div>
+                    <label for="filterStatus" class="block text-xs font-semibold text-slate-600 mb-1">สถานะโครงการ</label>
+                    <select id="filterStatus" class="w-full bg-slate-50 border border-slate-300 text-slate-700 text-sm rounded-xl focus:ring-mint focus:border-mint p-2.5 outline-none transition">
+                        <option value="ALL">ทั้งหมด (All Status)</option>
+                        <option value="คืนเงินทดรองจ่าย">คืนเงินทดรองจ่าย (ดำเนินการแล้ว)</option>
+                        <option value="รอดำเนินการ">รอดำเนินการ</option>
+                        <option value="เขียนโครงการ">เขียนโครงการ</option>
+                        <option value="เสนอกก.บริหารคณะ">เสนอกก.บริหารคณะ</option>
+                        <option value="ยังไม่ได้ดำเนินการ">ยังไม่ได้ดำเนินการ</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- KPI Cards Section -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <!-- Card 1: Total Projects -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center justify-between hover:shadow-md transition">
+                <div>
+                    <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">จำนวนโครงการทั้งหมด</p>
+                    <h3 id="kpiTotalProjects" class="text-3xl font-bold text-navy mt-1">18</h3>
+                    <p class="text-xs text-slate-400 mt-1">โครงการในแผนงาน</p>
+                </div>
+                <div class="w-12 h-12 bg-navy/10 text-navy rounded-xl flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-folder-open"></i>
+                </div>
+            </div>
+
+            <!-- Card 2: Completed Projects -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center justify-between hover:shadow-md transition">
+                <div>
+                    <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">ดำเนินการแล้ว</p>
+                    <h3 id="kpiCompletedProjects" class="text-3xl font-bold text-emerald-600 mt-1">3</h3>
+                    <p class="text-xs text-emerald-600/80 mt-1 font-medium"><i class="fa-solid fa-circle-check"></i> คืนเงินทดรองจ่าย</p>
+                </div>
+                <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-square-check"></i>
+                </div>
+            </div>
+
+            <!-- Card 3: Pending Projects -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center justify-between hover:shadow-md transition">
+                <div>
+                    <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">รอดำเนินการ / ขั้นตอนอื่นๆ</p>
+                    <h3 id="kpiPendingProjects" class="text-3xl font-bold text-amber-500 mt-1">15</h3>
+                    <p class="text-xs text-amber-600/80 mt-1 font-medium"><i class="fa-solid fa-clock"></i> อยู่ระหว่างเตรียมการ</p>
+                </div>
+                <div class="w-12 h-12 bg-amber-50 text-amber-500 rounded-xl flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-hourglass-half"></i>
+                </div>
+            </div>
+
+            <!-- Card 4: Total Budget -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center justify-between hover:shadow-md transition">
+                <div>
+                    <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">งบประมาณรวม</p>
+                    <h3 id="kpiTotalBudget" class="text-2xl font-bold text-navy mt-1">305,000 บาท</h3>
+                    <p id="kpiPendingBudgetNote" class="text-xs text-mint-dark font-medium mt-1">+ 2 โครงการรอแจ้งงบ</p>
+                </div>
+                <div class="w-12 h-12 bg-mint/20 text-mint-dark rounded-xl flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-coins"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- Visualizations Section (3 Charts) -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <!-- Chart 1: Donut Chart Status -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col">
+                <div class="mb-4">
+                    <h3 class="font-bold text-slate-800 text-sm sm:text-base flex items-center gap-2">
+                        <i class="fa-solid fa-chart-pie text-mint"></i> สัดส่วนสถานะโครงการ
+                    </h3>
+                    <p class="text-xs text-slate-400">จำแนกตามสถานะการดำเนินงานปัจจุบัน</p>
+                </div>
+                <div class="relative flex-1 min-h-[260px] flex items-center justify-center">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 2: Bar Chart Budget Comparison -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col lg:col-span-2">
+                <div class="mb-4 flex justify-between items-start">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-sm sm:text-base flex items-center gap-2">
+                            <i class="fa-solid fa-chart-column text-navy"></i> งบประมาณแต่ละโครงการ (บาท)
+                        </h3>
+                        <p class="text-xs text-slate-400">เปรียบเทียบงบประมาณที่อนุมัติ/ประมาณการ (แยก 0 บาท และ "รอแจ้ง")</p>
+                    </div>
+                </div>
+                <div class="relative flex-1 min-h-[260px]">
+                    <canvas id="budgetChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 3: Horizontal Bar Chart Participants -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 lg:col-span-3">
+                <div class="mb-4">
+                    <h3 class="font-bold text-slate-800 text-sm sm:text-base flex items-center gap-2">
+                        <i class="fa-solid fa-users text-mint"></i> จำนวนกลุ่มเป้าหมาย/ผู้เข้าร่วมแต่ละโครงการ (คน)
+                    </h3>
+                    <p class="text-xs text-slate-400">เปรียบเทียบปริมาณผู้เข้าร่วม (โครงการที่เป็นช่วงแสดงค่าประมาณเพื่อเปรียบเทียบเชิงสถิติ)</p>
+                </div>
+                <div class="relative h-[320px]">
+                    <canvas id="participantsChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Table Section -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                <div>
+                    <h3 class="font-bold text-slate-800 text-base sm:text-lg flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-navy"></i> ตารางรายละเอียดโครงการทั้งหมด
+                    </h3>
+                    <p class="text-xs text-slate-500">แสดงรายละเอียดทั้ง 18 โครงการ สามารถค้นหาและกรองตามเงื่อนไขได้</p>
+                </div>
+                <!-- Search Box -->
+                <div class="relative w-full sm:w-72">
+                    <input type="text" id="searchInput" placeholder="ค้นหาชื่อโครงการ หรือผู้รับผิดชอบ..." class="w-full bg-slate-50 border border-slate-300 text-slate-700 text-xs sm:text-sm rounded-xl pl-9 pr-4 py-2.5 outline-none focus:ring-mint focus:border-mint transition">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-sm"></i>
+                </div>
+            </div>
+
+            <!-- Table Container -->
+            <div class="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
+                <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                    <thead>
+                        <tr class="bg-navy text-white text-xs font-semibold uppercase tracking-wider">
+                            <th class="py-3 px-3 text-center w-12">ลำดับ</th>
+                            <th class="py-3 px-4 min-w-[200px]">ชื่อโครงการ</th>
+                            <th class="py-3 px-3 min-w-[130px]">ประเภทงบประมาณ</th>
+                            <th class="py-3 px-3 min-w-[120px]">ภาคการศึกษา</th>
+                            <th class="py-3 px-3 min-w-[120px]">ระยะเวลา</th>
+                            <th class="py-3 px-3 min-w-[150px]">กลุ่มเป้าหมาย</th>
+                            <th class="py-3 px-3 text-center min-w-[110px]">ผู้เข้าร่วม (คน)</th>
+                            <th class="py-3 px-3 min-w-[130px]">ผู้รับผิดชอบหลัก</th>
+                            <th class="py-3 px-3 text-right min-w-[120px]">งบประมาณ (บาท)</th>
+                            <th class="py-3 px-3 text-center min-w-[140px]">สถานะโครงการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="projectsTableBody" class="divide-y divide-slate-200 bg-white">
+                        <!-- Table rows populated dynamically via JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-2">
+                <div id="tableInfo">แสดงรายการทั้งหมด 18 โครงการ</div>
+                <div class="flex items-center gap-2">
+                    <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500"></span> ดำเนินการแล้ว (3)
+                    <span class="inline-block w-2.5 h-2.5 rounded-full bg-amber-500 ml-2"></span> รอดำเนินการ/ขั้นตอนอื่นๆ (15)
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-4 text-center border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4">
+            <p>© 2026 คณะบริหารธุรกิจ มหาวิทยาลัยศรีปทุม (SPUBUS) | ระบบติดตามแผนดำเนินงานกิจกรรมนักศึกษา</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Data & Dashboard Logic -->
+    <script>
+        // 1. Raw Data (100% exact matching requirement)
+        const RAW_PROJECTS_DATA = [
+            {id: 1, name: "โครงการปฐมนิเทศนักศึกษาใหม่", budget_type: "จากส่วนกลาง", semester: "ภาค 1-1/69 และ 1/69", duration: "6 - 13 มิย. 69", target: "นศ.ใหม่รหัส 69", participants: "1200", person_in_charge: "นส.อรอนงค์ มีสุข", funding_source: "งบประมาณจากส่วนกลาง", budget: 50000, status: "คืนเงินทดรองจ่าย"},
+            {id: 2, name: "โครงการรับน้องแยกคณะ", budget_type: "จากส่วนกลาง", semester: "ภาค 1-1/69", duration: "18 มิย. 69 10 กค. 69", target: "นศ.ใหม่รหัส 69", participants: "1200", person_in_charge: "นส.อรอนงค์ มีสุข", funding_source: "งบประมาณจากส่วนกลาง", budget: 50000, status: "คืนเงินทดรองจ่าย"},
+            {id: 3, name: "โครงการไหว้ครูแยกคณะ", budget_type: "จากส่วนกลาง", semester: "ภาค 1-1/69", duration: "3 กย. 69", target: "นศ.ใหม่รหัส 69", participants: "200", person_in_charge: "นส.อรอนงค์ มีสุข", funding_source: "งบประมาณจากส่วนกลาง", budget: 5000, status: "คืนเงินทดรองจ่าย"},
+            {id: 4, name: "โครงการกีฬา Freshy (เลื่อน)", budget_type: "ไม่มีงบประมาณ", semester: "เลื่อน จาก 1/69", duration: "รออัพเดต", target: "นศ.ใหม่รหัส 69", participants: "50 - 100", person_in_charge: "นส.อรอนงค์ มีสุข", funding_source: "ไม่มีงบประมาณ", budget: 0, status: "รอดำเนินการ"},
+            {id: 5, name: "โครงการเปิดโลกกิจกรรม", budget_type: "ไม่มีงบประมาณ", semester: "ภาค 1", duration: "29-30 ตค. 69", target: "นักศึกษาคณะบริหารธุรกิจ", participants: "50 - 100", person_in_charge: "นส.อรอนงค์ มีสุข", funding_source: "ไม่มีงบประมาณ", budget: 0, status: "รอดำเนินการ"},
+            {id: 6, name: "โตรงการส่งเสริมศิลปวัฒนธรรม - ลอยกระทง", budget_type: "ไม่มีงบประมาณ", semester: "ภาค 1", duration: "24 พย. 69", target: "นักศึกษาคณะบริหารธุรกิจ", participants: "50", person_in_charge: "นส.อรอนงค์ มีสุข", funding_source: "ไม่มีงบประมาณ", budget: 0, status: "รอดำเนินการ"},
+            {id: 7, name: "โครงการ SPUBUS Love and Care", budget_type: "ไม่มีงบประมาณ", semester: "ตลอดปีการศึกษา", duration: "1 พย. 69 - 31 กค. 70", target: "นักศึกษาและบุคลากร คณะบริหารธุรกิจ", participants: "500 - 800", person_in_charge: "นายจักร บันเทิง", funding_source: "ไม่มีงบประมาณ", budget: 0, status: "เขียนโครงการ"},
+            {id: 8, name: "SPUBUS Success Beyond Graduation", budget_type: "โครงการ (ทุกประเภท)", semester: "ภาค 1", duration: "ธค. 69", target: "นักศึกษาชั้นปีสุดท้าย คณะบริหารธุรกิจ", participants: "650", person_in_charge: "นส.กรกช ชุมแสง", funding_source: "โครงการ ตามแผนดำเนินงาน", budget: 50000, status: "เสนอกก.บริหารคณะ"},
+            {id: 9, name: "กิจกรรมวันรับปริญญา", budget_type: "งบประมาณการตลาด", semester: "ภาค 1", duration: "25 ธค. 69", target: "บัณฑิตคณะบริหารธุรกิจ", participants: "300", person_in_charge: "นส.อรอนงค์ มีสุข", funding_source: "งบประมาณการตลาด", budget: 20000, status: "ยังไม่ได้ดำเนินการ"},
+            {id: 10, name: "SPUBUS Prompt", budget_type: "โครงการ (ทุกประเภท)", semester: "ภาค 2", duration: "กพ. 69", target: "นักศึกษาคณะบริหารธุรกิจ ทุกชั้นปี", participants: "100", person_in_charge: "นายจักร บันเทิง", funding_source: "โครงการ (ทุกประเภท)", budget: 50000, status: "ยังไม่ได้ดำเนินการ"},
+            {id: 11, name: "กิจกรรมทำนุบำรุงศิลปวัฒนธรรม - วันมาฆะบูชา", budget_type: "ไม่มีงบประมาณ", semester: "ภาค 2", duration: "กพ. 70", target: "SPUBUS Staff อจ.อนุกิจ", participants: "100", person_in_charge: "นส.อรอนงค์ มีสุข", funding_source: "ไม่มีงบประมาณ", budget: 0, status: "ยังไม่ได้ดำเนินการ"},
+            {id: 12, name: "โครงการพัฒนาผู้นำนักศึกษา คณะบริหารธุรกิจ", budget_type: "จากส่วนกลาง", semester: "ภาค 2", duration: "มค. 70", target: "SPUBUS Staff", participants: "50", person_in_charge: "นส.มีสุข มีใจ", funding_source: "โครงการ ตามแผนดำเนินงาน", budget: 70000, status: "ยังไม่ได้ดำเนินการ"},
+            {id: 13, name: "โครงการสร้างเครือข่ายระหว่างคณะ กับสถาบัน", budget_type: "จากส่วนกลาง", semester: "ภาค 2", duration: "มีค. - กค. 70", target: "SPUBUS Staff", participants: "20 - 30", person_in_charge: "นายวี จักรภพ", funding_source: "งบประมาณจากส่วนกลาง", budget: 10000, status: "ยังไม่ได้ดำเนินการ"},
+            {id: 14, name: "SPU ส่งสุขสู่ชุมชน", budget_type: "จากส่วนกลาง", semester: "ภาค 2", duration: "มค. 70", target: "SPUBUS Staff", participants: "20", person_in_charge: "นายวี จักรภพ", funding_source: "งบประมาณจากส่วนกลาง", budget: "รอแจ้ง", status: "ยังไม่ได้ดำเนินการ"},
+            {id: 15, name: "SPU Games", budget_type: "จากส่วนกลาง", semester: "ภาค 2", duration: "มีค. 70", target: "นักศึกษาคณะบริหารธุรกิจ", participants: "50-100", person_in_charge: "นส.อรอนงค์ มีสุข", funding_source: "งบประมาณจากส่วนกลาง", budget: "รอแจ้ง", status: "ยังไม่ได้ดำเนินการ"},
+            {id: 16, name: "สืบสานประเพณีสงกรานต์", budget_type: "ไม่มีงบประมาณ", semester: "ภาค 2", duration: "เมย. 70", target: "นักศึกษาคณะบริหารธุรกิจ", participants: "100", person_in_charge: "นส.อรอนงค์ มีสุข", funding_source: "ไม่มีงบประมาณ", budget: 0, status: "ยังไม่ได้ดำเนินการ"},
+            {id: 17, name: "กิจกรรมทำนุบำรุงศิลปวัฒนธรรม - งานกตเวฑิตาคุณรำลึก ดร.สุข พุคยาภรณ์", budget_type: "ไม่มีงบประมาณ", semester: "ภาค 3", duration: "กค. 70", target: "SPUBUS Staff อจ.อนุกิจ", participants: "20", person_in_charge: "นส.อรอนงค์ มีสุข", funding_source: "ไม่มีงบประมาณ", budget: 0, status: "ยังไม่ได้ดำเนินการ"},
+            {id: 18, name: "กิจกรรมทำนุบำรุงศิลปวัฒนธรรม - วันเข้าพรรษา", budget_type: "ไม่มีงบประมาณ", semester: "ภาค 3", duration: "กค. 70", target: "SPUBUS Staff อจ.อนุกิจ", participants: "100", person_in_charge: "นส.อรอนงค์ มีสุข", funding_source: "ไม่มีงบประมาณ", budget: 0, status: "ยังไม่ได้ดำเนินการ"}
+        ];
+
+        // Status Order Priority for Table Sorting
+        const STATUS_ORDER = {
+            "คืนเงินทดรองจ่าย": 1,
+            "รอดำเนินการ": 2,
+            "เขียนโครงการ": 3,
+            "เสนอกก.บริหารคณะ": 4,
+            "ยังไม่ได้ดำเนินการ": 5
+        };
+
+        // Chart Objects References
+        let statusChartObj = null;
+        let budgetChartObj = null;
+        let participantsChartObj = null;
+
+        // Color Palette (Max 3 main theme colors: Navy #0f2c59, Mint #00a8cc, Neutral Gray + accents for clear charts)
+        const COLOR_NAVY = '#0f2c59';
+        const COLOR_MINT = '#00a8cc';
+        const COLOR_SUCCESS = '#10b981'; // Emerald
+        const COLOR_AMBER = '#f59e0b'; // Amber
+        const COLOR_SLATE = '#64748b'; // Slate
+
+        // Helper function to parse participants into numerical mid-point for chart plotting
+        function parseParticipantValue(str) {
+            if (typeof str === 'number') return str;
+            const text = String(str).trim();
+            if (text.includes('-')) {
+                const parts = text.split('-').map(p => parseFloat(p.trim()));
+                if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+                    return (parts[0] + parts[1]) / 2;
+                }
+            }
+            const parsed = parseFloat(text);
+            return isNaN(parsed) ? 0 : parsed;
+        }
+
+        // Initialize App on DOM Load
+        document.addEventListener('DOMContentLoaded', () => {
+            setupEventListeners();
+            updateDashboard();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('filterSemester').addEventListener('change', updateDashboard);
+            document.getElementById('filterBudgetType').addEventListener('change', updateDashboard);
+            document.getElementById('filterStatus').addEventListener('change', updateDashboard);
+            document.getElementById('searchInput').addEventListener('input', updateDashboard);
+            
+            document.getElementById('resetFilters').addEventListener('click', () => {
+                document.getElementById('filterSemester').value = 'ALL';
+                document.getElementById('filterBudgetType').value = 'ALL';
+                document.getElementById('filterStatus').value = 'ALL';
+                document.getElementById('searchInput').value = '';
+                updateDashboard();
+            });
+        }
+
+        // Main Refresh Function for Interactive Behavior
+        function updateDashboard() {
+            const filteredData = getFilteredData();
+            updateKPICards(filteredData);
+            updateStatusChart(filteredData);
+            updateBudgetChart(filteredData);
+            updateParticipantsChart(filteredData);
+            updateProjectsTable(filteredData);
+        }
+
+        // Filter Logic
+        function getFilteredData() {
+            const semester = document.getElementById('filterSemester').value;
+            const budgetType = document.getElementById('filterBudgetType').value;
+            const status = document.getElementById('filterStatus').value;
+            const search = document.getElementById('searchInput').value.trim().toLowerCase();
+
+            return RAW_PROJECTS_DATA.filter(item => {
+                // Semester filter
+                let matchSemester = (semester === 'ALL');
+                if (!matchSemester) {
+                    if (semester === 'ภาค 1-1/69') {
+                        matchSemester = item.semester.includes('ภาค 1-1/69');
+                    } else {
+                        matchSemester = (item.semester === semester);
+                    }
+                }
+
+                // Budget Type filter
+                const matchBudgetType = (budgetType === 'ALL') || (item.budget_type === budgetType);
+
+                // Status filter
+                const matchStatus = (status === 'ALL') || (item.status === status);
+
+                // Search Filter
+                const matchSearch = (search === '') || 
+                    item.name.toLowerCase().includes(search) || 
+                    item.person_in_charge.toLowerCase().includes(search) ||
+                    item.target.toLowerCase().includes(search);
+
+                return matchSemester && matchBudgetType && matchStatus && matchSearch;
+            });
+        }
+
+        // 1. Update KPI Cards
+        function updateKPICards(data) {
+            const totalProjects = data.length;
+            const completedProjects = data.filter(d => d.status === 'คืนเงินทดรองจ่าย').length;
+            const pendingProjects = totalProjects - completedProjects;
+
+            let totalBudget = 0;
+            let pendingBudgetCount = 0;
+
+            data.forEach(d => {
+                if (d.budget === 'รอแจ้ง') {
+                    pendingBudgetCount++;
+                } else if (typeof d.budget === 'number') {
+                    totalBudget += d.budget;
+                }
+            });
+
+            document.getElementById('kpiTotalProjects').innerText = totalProjects;
+            document.getElementById('kpiCompletedProjects').innerText = completedProjects;
+            document.getElementById('kpiPendingProjects').innerText = pendingProjects;
+            document.getElementById('kpiTotalBudget').innerText = totalBudget.toLocaleString('th-TH') + ' บาท';
+
+            const noteElem = document.getElementById('kpiPendingBudgetNote');
+            if (pendingBudgetCount > 0) {
+                noteElem.innerText = `+ ${pendingBudgetCount} โครงการรอแจ้งงบ`;
+                noteElem.classList.remove('hidden');
+            } else {
+                noteElem.classList.add('hidden');
+            }
+        }
+
+        // 2. Donut Chart - Status Distribution
+        function updateStatusChart(data) {
+            const ctx = document.getElementById('statusChart').getContext('2d');
+            
+            const statusCounts = {
+                "คืนเงินทดรองจ่าย": 0,
+                "รอดำเนินการ": 0,
+                "เขียนโครงการ": 0,
+                "เสนอกก.บริหารคณะ": 0,
+                "ยังไม่ได้ดำเนินการ": 0
+            };
+
+            data.forEach(d => {
+                if (statusCounts[d.status] !== undefined) {
+                    statusCounts[d.status]++;
+                }
+            });
+
+            const labels = Object.keys(statusCounts);
+            const values = Object.values(statusCounts);
+
+            const colors = [
+                '#10b981', // คืนเงินทดรองจ่าย - Green
+                '#3b82f6', // รอดำเนินการ - Blue
+                '#f59e0b', // เขียนโครงการ - Amber
+                '#8b5cf6', // เสนอกก.บริหารคณะ - Purple
+                '#94a3b8'  // ยังไม่ได้ดำเนินการ - Slate
+            ];
+
+            if (statusChartObj) {
+                statusChartObj.destroy();
+            }
+
+            statusChartObj = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: colors,
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: { family: 'Sarabun', size: 11 },
+                                boxWidth: 12,
+                                padding: 10
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const val = context.raw;
+                                    const pct = total > 0 ? ((val / total) * 100).toFixed(1) : 0;
+                                    return ` ${context.label}: ${val} โครงการ (${pct}%)`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+        }
+
+        // 3. Bar Chart - Budget Comparison
+        function updateBudgetChart(data) {
+            const ctx = document.getElementById('budgetChart').getContext('2d');
+
+            const labels = data.map(d => d.name.length > 20 ? d.name.substring(0, 18) + '...' : d.name);
+            const budgetValues = data.map(d => (d.budget === 'รอแจ้ง') ? 0 : d.budget);
+            const backgroundColors = data.map(d => {
+                if (d.budget === 'รอแจ้ง') return '#f59e0b'; // Amber for "รอแจ้ง"
+                if (d.budget === 0) return '#cbd5e1';       // Light gray for 0 THB
+                return '#0f2c59';                          // Navy for normal budget
+            });
+
+            if (budgetChartObj) {
+                budgetChartObj.destroy();
+            }
+
+            budgetChartObj = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'งบประมาณ (บาท)',
+                        data: budgetValues,
+                        backgroundColor: backgroundColors,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: function(items) {
+                                    return data[items[0].dataIndex].name;
+                                },
+                                label: function(context) {
+                                    const orig = data[context.dataIndex].budget;
+                                    if (orig === 'รอแจ้ง') {
+                                        return ' งบประมาณ: รอแจ้ง';
+                                    }
+                                    return ` งบประมาณ: ${orig.toLocaleString('th-TH')} บาท`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                font: { family: 'Sarabun', size: 10 },
+                                maxRotation: 45,
+                                minRotation: 45
+                            },
+                            grid: { display: false }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                font: { family: 'Sarabun', size: 11 },
+                                callback: function(value) {
+                                    return value.toLocaleString('th-TH');
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 4. Horizontal Bar Chart - Participants Comparison
+        function updateParticipantsChart(data) {
+            const ctx = document.getElementById('participantsChart').getContext('2d');
+
+            const labels = data.map(d => d.name.length > 25 ? d.name.substring(0, 23) + '...' : d.name);
+            const parsedValues = data.map(d => parseParticipantValue(d.participants));
+
+            if (participantsChartObj) {
+                participantsChartObj.destroy();
+            }
+
+            participantsChartObj = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'จำนวนผู้เข้าร่วม (คน)',
+                        data: parsedValues,
+                        backgroundColor: '#00a8cc',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: function(items) {
+                                    return data[items[0].dataIndex].name;
+                                },
+                                label: function(context) {
+                                    const origStr = data[context.dataIndex].participants;
+                                    return ` กลุ่มเป้าหมาย/ผู้เข้าร่วม: ${origStr} คน`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: { font: { family: 'Sarabun', size: 11 } }
+                        },
+                        y: {
+                            ticks: { font: { family: 'Sarabun', size: 10 } },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 5. Update Details Table
+        function updateProjectsTable(data) {
+            const tbody = document.getElementById('projectsTableBody');
+            tbody.innerHTML = '';
+
+            // Sort by Status Priority, then by ID
+            const sortedData = [...data].sort((a, b) => {
+                const orderA = STATUS_ORDER[a.status] || 99;
+                const orderB = STATUS_ORDER[b.status] || 99;
+                if (orderA !== orderB) return orderA - orderB;
+                return a.id - b.id;
+            });
+
+            document.getElementById('tableInfo').innerText = `แสดง ${sortedData.length} จากทั้งหมด 18 โครงการ`;
+
+            if (sortedData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" class="py-8 text-center text-slate-400">
+                            <i class="fa-solid fa-folder-open text-3xl mb-2 block"></i>
+                            ไม่พบข้อมูลโครงการตามเงื่อนไขที่เลือก
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            sortedData.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50/80 transition text-slate-700';
+
+                // Status Badge Styling
+                let statusBadge = '';
+                switch (item.status) {
+                    case 'คืนเงินทดรองจ่าย':
+                        statusBadge = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>${item.status}</span>`;
+                        break;
+                    case 'รอดำเนินการ':
+                        statusBadge = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>${item.status}</span>`;
+                        break;
+                    case 'เขียนโครงการ':
+                        statusBadge = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>${item.status}</span>`;
+                        break;
+                    case 'เสนอกก.บริหารคณะ':
+                        statusBadge = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200"><span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span>${item.status}</span>`;
+                        break;
+                    default:
+                        statusBadge = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>${item.status}</span>`;
+                }
+
+                // Format Budget Display
+                let budgetDisplay = '';
+                if (item.budget === 'รอแจ้ง') {
+                    budgetDisplay = `<span class="text-amber-600 font-semibold bg-amber-50 px-2 py-0.5 rounded border border-amber-200">รอแจ้ง</span>`;
+                } else if (item.budget === 0) {
+                    budgetDisplay = `<span class="text-slate-400">0</span>`;
+                } else {
+                    budgetDisplay = `<span class="font-semibold text-navy">${item.budget.toLocaleString('th-TH')}</span>`;
+                }
+
+                tr.innerHTML = `
+                    <td class="py-3 px-3 text-center font-medium text-slate-400">${item.id}</td>
+                    <td class="py-3 px-4 font-semibold text-slate-900">${item.name}</td>
+                    <td class="py-3 px-3"><span class="text-xs bg-slate-100 px-2 py-1 rounded text-slate-600">${item.budget_type}</span></td>
+                    <td class="py-3 px-3 text-slate-600">${item.semester}</td>
+                    <td class="py-3 px-3 text-slate-600 text-xs">${item.duration}</td>
+                    <td class="py-3 px-3 text-slate-600 text-xs">${item.target}</td>
+                    <td class="py-3 px-3 text-center font-medium text-slate-800">${item.participants}</td>
+                    <td class="py-3 px-3 text-slate-600">${item.person_in_charge}</td>
+                    <td class="py-3 px-3 text-right">${budgetDisplay}</td>
+                    <td class="py-3 px-3 text-center">${statusBadge}</td>
+                `;
+
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+</html>
